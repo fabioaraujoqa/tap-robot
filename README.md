@@ -33,22 +33,22 @@ P1S → ponteira toca a tela
 
 ## 2. Mecânica
 
-- **Gabarito do celular:** `cad/phone_jig.scad` (parametrizado com as medidas do Moto
-  G06: 171,35 × 77,5 × 8,31 mm). **Não foi renderizado nem testado fisicamente**; imprima
-  uma versão rápida e confira o encaixe. Só os cantos seguram o aparelho, deixando
-  livres os botões laterais e a entrada USB-C. Cole/prenda a base na mesa sempre no
-  mesmo lugar (marque a posição com fita).
+- **Gabarito do celular:** o modelo usado ainda vai ser adicionado ao projeto. Requisitos:
+  prender o Moto G06 (171,35 × 77,5 × 8,31 mm) só pelos cantos, deixando livres os botões
+  laterais e a entrada USB-C, e ficar preso na mesa sempre no mesmo lugar (marque a
+  posição com fita).
 - **Suporte da ponteira** (depende do seu cabeçote, então não vem pronto). Requisitos:
   1. A ponta da ponteira passa **abaixo do bico** (pelo menos ~5 mm), senão o bico bate
      no celular antes da ponteira.
   2. **Mola ou folga elástica** de 1–2 mm no sentido vertical.
-  3. Fixação firme, sem nada aquecendo. Procure "pen holder" para P1P/P1S no MakerWorld.
+  3. Fixação firme, sem nada aquecendo. Testado: o "P1/X1 Pen Plotter Module" do
+     MakerWorld, que encaixa no cabeçote e tem mola (ver `docs/decisoes.md`).
   4. Se a ponteira ficar deslocada do bico, tudo bem para a calibração (ela absorve o
      deslocamento), mas a área alcançável da tela diminui. Ajuste `x_min/x_max/y_min/y_max`.
 - Telas capacitivas às vezes exigem **aterramento**: se o celular não sentir o toque, ligue
   a espuma/borracha condutiva por um fio ao corpo do celular.
-- A tela útil do G06 é ≈ 70 × 160 mm; a base fixa o celular com a tela a
-  `3 + 8,31 = 11,31 mm` acima da mesa.
+- A tela útil do G06 é ≈ 70 × 160 mm. A tela fica a `espessura da base + 8,31 mm` acima
+  da mesa; esse valor entra no cálculo do `motion.z_floor`.
 
 ## 3. Segurança (leia antes de mover qualquer coisa)
 
@@ -253,7 +253,6 @@ tools/         linha de comando: calibrate, test_connection, server (python -m t
 tests/         testes unitários da lógica (sem hardware): python -m pytest tests -q
 examples/      alternativa em pytest para os testes Appium
 apps/          APK de exemplo (ApiDemos)
-cad/           gabarito do celular (OpenSCAD)
 docs/          decisões e aprendizados
 results/       saída do Robot (não versionar)
 runs/          execuções do soak (não versionar)

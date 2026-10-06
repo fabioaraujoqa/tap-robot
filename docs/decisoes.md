@@ -44,6 +44,22 @@ suíte Robot roda em laço localizando elementos pelo Appium. O guardião precis
 suíte para parar (ex.: a `TapRobotLibrary` passa a recusar toques depois de um aborto).
 Só vale a pena quando houver esse app.
 
+### Ideias vindas do BambuScribe
+
+O [BambuScribe](https://github.com/Animesh-Varma/BambuScribe) (projeto GPLv3 que transforma impressoras Bambu em
+plotter) serviu de referência. Por ser GPLv3, nada do código dele foi copiado; se alguma
+ideia for implementada, deve ser reescrita aqui.
+
+- **Câmera da P1S como evidência.** A câmera é lida pela rede local: conexão TLS na porta
+  6000 (certificado autoassinado), um pacote de autenticação com o usuário `bblp` e o
+  access code, e depois um fluxo de JPEGs (cada quadro entre os marcadores `FF D8` e
+  `FF D9`). No soak, daria para guardar fotos do robô e do celular junto com as capturas de
+  tela, e anexar uma foto ao relatório quando houver aborto.
+- **Reenvio quando o comando some.** Eles também viram a impressora descartar comandos com
+  a fila cheia e resolvem esperando a resposta com o mesmo `sequence_id` por até 8 s e
+  reenviando se ela não vier. O `RobotTap` não precisa disso hoje (espera cada gesto
+  terminar), mas é o caminho se algum dia for preciso mandar G-code em sequência rápida.
+
 ## 3. Aprendizados no hardware (5 e 6 de outubro de 2026)
 
 **Rede e P1S**
@@ -82,7 +98,7 @@ Só vale a pena quando houver esse app.
 ## 4. Pendências para o uso real
 
 1. Trocar a caneta pela ponteira de borracha condutiva (no mesmo módulo).
-2. Imprimir e testar o gabarito do celular (`cad/phone_jig.scad`).
+2. Adicionar ao projeto o gabarito do celular que for usado, e testar o encaixe.
 3. Definir `motion.z_floor` no `config.yaml` (hoje vazio) e rodar `python -m tools.calibrate run`.
 4. Confirmar as coordenadas dos cenários de exemplo com `python -m soak ui`.
 5. Rodar `robot -d results robot/tests` com o celular desbloqueado (a migração para o Robot

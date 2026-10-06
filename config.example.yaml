@@ -8,7 +8,7 @@ printer:
 motion:
   # ---- Z: na Bambu, Z = distância entre o bico e a mesa (Z maior = mesa mais baixa).
   # Z MÍNIMO PERMITIDO. É a trava de segurança contra esmagar o celular.
-  # Calcule com folga: espessura da base do gabarito (3 mm) + celular (8,31 mm)
+  # Calcule com folga: espessura da base do gabarito (ex.: 3 mm) + celular (8,31 mm)
   # + quanto a ponta da caneta passa ABAIXO do bico - 1 mm de folga mecânica.
   # Se o valor ficar errado para baixo, a mesa sobe demais. Na dúvida, use um valor ALTO
   # e abaixe aos poucos depois de ver o toque funcionando.
