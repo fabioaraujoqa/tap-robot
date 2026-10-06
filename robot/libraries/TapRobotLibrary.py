@@ -16,23 +16,10 @@ from robot.api import logger
 from robot.api.deco import keyword, library
 from robot.libraries.BuiltIn import BuiltIn
 
-from taprobot import BambuLink, Calibration, RobotTap, load_config, normalize_config
+from taprobot import BambuLink, Calibration, RobotTap, load_config, simulated_robot
 from taprobot.device import DEFAULT_SERIAL, resolve_udid
 
 ROOT = Path(__file__).resolve().parents[2]
-
-SIMULATED_Z_FLOOR = 14.0  # só para o modo simulado; não move nada de verdade
-
-
-class _LogLink:
-    """Link do modo simulado: registra o G-code no log em vez de enviar."""
-
-    def send_gcode(self, gcode, wait_ack=True):
-        logger.debug("G-code simulado:\n" + gcode.rstrip())
-
-    def close(self):
-        pass
-
 
 def _bool(value) -> bool:
     if isinstance(value, str):
@@ -46,7 +33,6 @@ class TapRobotLibrary:
         self.config_path = config
         self.simulated = _bool(simulado)
         self.robot: RobotTap | None = None
-        self._link = None
 
     # ------------------------------------------------------------ conexão
     @keyword("Conectar Robô")
@@ -55,9 +41,7 @@ class TapRobotLibrary:
         if self.robot is not None:
             return
         if self.simulated:
-            cfg = normalize_config({"motion": {"z_floor": SIMULATED_Z_FLOOR}}, require_printer=False)
-            self._link = _LogLink()
-            self.robot = RobotTap(cfg, self._link, Calibration.simulated(cfg), sleep=lambda s: None)
+            self.robot = simulated_robot(on_send=lambda g: logger.debug("G-code simulado:\n" + g.rstrip()))
             logger.warn("Robô em modo SIMULADO: os toques não são reais.")
             return
         cfg = load_config(self.config_path)
@@ -66,9 +50,9 @@ class TapRobotLibrary:
             raise RuntimeError(f"{cal_path.name} não encontrado: rode `python -m tools.calibrate run`")
         cal = Calibration.load(cal_path)
         p = cfg["printer"]
-        self._link = BambuLink(p["ip"], p["serial"], p["access_code"])
-        self._link.connect()
-        self.robot = RobotTap(cfg, self._link, cal)
+        link = BambuLink(p["ip"], p["serial"], p["access_code"])
+        link.connect()
+        self.robot = RobotTap(cfg, link, cal)
         logger.info(f"Robô conectado (erro de calibração {cal.fit_error_mm:.2f} mm).")
 
     @keyword("Desconectar Robô")

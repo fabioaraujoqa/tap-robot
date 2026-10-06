@@ -30,12 +30,10 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 
 from taprobot import (
-    BambuLink, Calibration, ConfigError, DryRunLink, RobotTap, load_config, normalize_config,
+    BambuLink, Calibration, ConfigError, RobotTap, load_config, simulated_config, simulated_robot,
 )
 
 log = logging.getLogger("taprobot.server")
-
-DRY_RUN_Z_FLOOR = 14.0  # só para o dry-run sem config.yaml; não move nada de verdade
 
 
 def _num(body: dict, key: str, default=None) -> float:
@@ -135,13 +133,16 @@ def main():
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(message)s")
 
     simulated = False
-    if args.dry_run and not Path(args.config).exists():
-        print(f"[dry-run] {args.config} não encontrado: usando configuração padrão simulada")
-        cfg = normalize_config({"motion": {"z_floor": DRY_RUN_Z_FLOOR}}, require_printer=False)
+    try:
+        cfg = load_config(args.config, require_printer=not args.dry_run)
+    except ConfigError as exc:
+        if not args.dry_run:
+            raise
+        # dry-run antes de terminar a montagem (sem config.yaml ou com z_floor vazio)
+        print(f"[dry-run] usando configuração simulada. Motivo: {exc}", flush=True)
+        cfg = simulated_config()
         cfg["_dir"] = str(Path.cwd())
         simulated = True
-    else:
-        cfg = load_config(args.config, require_printer=not args.dry_run)
 
     cal_path = Path(cfg["_dir"]) / cfg["calibration_file"]
     if args.dry_run and not cal_path.exists():
@@ -152,7 +153,7 @@ def main():
         cal = Calibration.load(cal_path)
 
     if args.dry_run:
-        robot = RobotTap(cfg, DryRunLink(), cal, sleep=lambda s: None)
+        robot = simulated_robot(cfg=cfg, calibration=cal)
     else:
         p = cfg["printer"]
         link = BambuLink(p["ip"], p["serial"], p["access_code"])

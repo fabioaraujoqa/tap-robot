@@ -5,7 +5,7 @@ import sys
 import numpy as np
 import pytest
 
-from taprobot import Calibration, ConfigError, DryRunLink, RobotTap, fit_affine, normalize_config
+from taprobot import Calibration, ConfigError, DryRunLink, RobotTap, fit_affine, normalize_config, simulated_robot
 from taprobot.touch_reader import TouchReader, parse_getevent_lp
 
 
@@ -160,6 +160,20 @@ def test_touch_reader_state_machine():
     x, y = r.contacts[0]
     assert x == pytest.approx(201, abs=1) and y == pytest.approx(400, abs=1)
 
+
+
+def test_robo_simulado_entrega_o_gcode_e_respeita_as_travas():
+    sent = []
+    robot = simulated_robot(on_send=sent.append)
+    robot.tap_px(360, 820)
+    robot.park()
+    assert len(sent) == 2 and robot.link.sent == 2
+    assert "G4 P" in sent[0]
+    with pytest.raises(ValueError):
+        robot.tap_px(9999, 1)  # fora da tela continua bloqueado
+    quiet = simulated_robot(on_send=None)
+    quiet.tap_px(10, 10)
+    assert quiet.link.sent == 1
 
 if __name__ == "__main__":
     sys.exit(pytest.main([__file__, "-q"]))

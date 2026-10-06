@@ -16,8 +16,16 @@ from .config import ConfigError
 log = logging.getLogger("taprobot")
 
 
+def _print_gcode(gcode: str):
+    print("[dry-run] G-code:\n  " + gcode.rstrip().replace("\n", "\n  "))
+
+
 class DryRunLink:
-    """Imprime o G-code em vez de enviar. Bom para testar sem a impressora."""
+    """Não envia nada à impressora. Cada G-code vai para `on_send` (padrão: imprime)."""
+
+    def __init__(self, on_send=_print_gcode):
+        self.on_send = on_send or (lambda g: None)
+        self.sent = 0
 
     def connect(self, *a, **k):
         pass
@@ -26,7 +34,8 @@ class DryRunLink:
         pass
 
     def send_gcode(self, gcode, wait_ack=True):
-        print("[dry-run] G-code:\n  " + gcode.rstrip().replace("\n", "\n  "))
+        self.sent += 1
+        self.on_send(gcode)
         return None
 
 

@@ -54,19 +54,6 @@ class AckLink:
         self.inner.close()
 
 
-class CountingLink:
-    """Link do dry-run: só conta os comandos (o DryRunLink imprimiria cada G-code)."""
-
-    def __init__(self):
-        self.sent = 0
-
-    def send_gcode(self, gcode, wait_ack=True):
-        self.sent += 1
-
-    def close(self):
-        pass
-
-
 class TouchProbe:
     """Verificação de calibração real: toca e lê o pixel sentido pelo celular (getevent)."""
 
@@ -109,7 +96,7 @@ def apply_overrides(sc, args):
 
 
 def cmd_run(args) -> int:
-    from taprobot import BambuLink, Calibration, RobotTap, load_config, normalize_config
+    from taprobot import BambuLink, Calibration, RobotTap, load_config, simulated_robot
     from .runner import Runner
 
     sc = apply_overrides(load_scenario(args.scenario), args)
@@ -119,8 +106,7 @@ def cmd_run(args) -> int:
 
     if args.dry_run:
         from .fake import FakeAdb, FakeTouchProbe
-        cfg = normalize_config({"motion": {"z_floor": 14.0}}, require_printer=False)
-        robot = RobotTap(cfg, CountingLink(), Calibration.simulated(cfg), sleep=lambda s: None)
+        robot = simulated_robot(on_send=None)  # só conta os comandos; imprimir cada um poluiria a saída
         adb = FakeAdb(sc.package, charging=sc.mode == "soak", leak_mb_per_h=6.0, drain_pct_per_h=40.0)
         if args.simulate_crash:
             adb.at(45, lambda a: a.crash())
