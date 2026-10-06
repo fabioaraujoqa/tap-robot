@@ -1,16 +1,10 @@
 """Busca do celular (taprobot.device) e biblioteca do Robot Framework em modo simulado."""
-import sys
-from pathlib import Path
-
-sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 import pytest
 
 from taprobot import device
 
-LIB_DIR = Path(__file__).resolve().parents[1] / "robot" / "libraries"
-sys.path.insert(0, str(LIB_DIR))
-import TapRobotLibrary as lib_module  # noqa: E402
+import TapRobotLibrary as lib_module  # robot/libraries está no pythonpath do pytest
 
 
 def test_parse_mdns_acha_o_serial_certo():

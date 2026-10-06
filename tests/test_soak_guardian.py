@@ -1,10 +1,6 @@
 """Guardião + executor com relógio simulado: cada falha deve parar o teste e estacionar a ponteira."""
 import json
 import signal
-import sys
-from pathlib import Path
-
-sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 import pytest
 

@@ -10,19 +10,16 @@ do Robot, e a calibração é fictícia. Serve para validar os testes sem hardwa
 """
 from __future__ import annotations
 
-import sys
 from pathlib import Path
 
 from robot.api import logger
 from robot.api.deco import keyword, library
 from robot.libraries.BuiltIn import BuiltIn
 
-ROOT = Path(__file__).resolve().parents[2]
-if str(ROOT) not in sys.path:
-    sys.path.insert(0, str(ROOT))
+from taprobot import BambuLink, Calibration, RobotTap, load_config, normalize_config
+from taprobot.device import DEFAULT_SERIAL, resolve_udid
 
-from taprobot import BambuLink, Calibration, RobotTap, load_config, normalize_config  # noqa: E402
-from taprobot.device import DEFAULT_SERIAL, resolve_udid  # noqa: E402
+ROOT = Path(__file__).resolve().parents[2]
 
 SIMULATED_Z_FLOOR = 14.0  # só para o modo simulado; não move nada de verdade
 

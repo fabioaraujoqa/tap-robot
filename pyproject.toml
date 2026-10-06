@@ -1,0 +1,31 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "tap-robot"
+version = "0.1.0"
+description = "Robô de toque físico para testes em celular, usando uma Bambu Lab P1S como robô cartesiano"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "paho-mqtt>=1.6",
+    "numpy>=1.24",
+    "PyYAML>=6.0",
+    "robotframework>=7.1",
+    "robotframework-appiumlibrary>=2.1",
+    "Appium-Python-Client>=3.0",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8"]
+
+[tool.setuptools.packages.find]
+include = ["taprobot*", "soak*", "tools*"]
+
+[tool.setuptools.package-data]
+soak = ["examples/*.yaml"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = [".", "robot/libraries"]

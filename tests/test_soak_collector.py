@@ -1,10 +1,7 @@
 """Parsers (com saídas reais do Moto G06) e coletor (com o FakeAdb)."""
 import csv
 import json
-import sys
 from pathlib import Path
-
-sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 import pytest
 

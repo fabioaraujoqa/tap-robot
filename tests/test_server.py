@@ -1,12 +1,8 @@
 """Testa o servidor HTTP em dry-run (sem impressora). Rode: python -m pytest tests -q"""
 import json
-import sys
 import threading
 import urllib.error
 import urllib.request
-from pathlib import Path
-
-sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 import pytest
 
