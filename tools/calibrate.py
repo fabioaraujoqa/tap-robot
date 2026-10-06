@@ -20,7 +20,8 @@ from pathlib import Path
 import numpy as np
 
 from taprobot import BambuLink, Calibration, RobotTap, load_config
-from taprobot.touch_reader import Adb, TouchReader, find_touch_device, get_wm_size
+from taprobot.adb import AdbClient
+from taprobot.touch_reader import TouchReader, find_touch_device, get_wm_size
 
 EXPECTED_PX_PER_MM = 10.25  # Moto G06: ~720 px / 70,25 mm de largura útil
 
@@ -55,7 +56,7 @@ def open_session(cfg, with_cal):
     cal = Calibration.load(cal_path) if with_cal else None
     robot = RobotTap(cfg, link, cal)
 
-    adb = Adb(cfg["adb"]["path"], cfg["adb"]["serial"])
+    adb = AdbClient(cfg["adb"]["serial"], cfg["adb"]["path"])
     try:
         w, h = get_wm_size(adb)
     except Exception as exc:  # noqa: BLE001

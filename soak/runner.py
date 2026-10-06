@@ -8,6 +8,8 @@ from datetime import datetime
 from pathlib import Path
 from typing import Callable, Optional
 
+from taprobot.adb import AdbError
+
 from .collector import Collector, EventLog
 from .guardian import Abort, Guardian
 from .scenario import Player, Scenario, Step, WearCounter
@@ -87,7 +89,6 @@ class Runner:
         self.guard.check_touches(self.touches)
 
     def _sample(self):
-        from .adb import AdbError
         try:
             row = self.col.sample(touches=self.touches)
         except AdbError as exc:

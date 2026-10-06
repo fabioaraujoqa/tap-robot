@@ -6,7 +6,7 @@ from pathlib import Path
 import pytest
 
 from soak import parsers
-from soak.adb import AdbError
+from taprobot.adb import AdbError
 from soak.collector import COLUMNS, Collector, EventLog
 from soak.fake import FakeAdb
 

@@ -12,7 +12,7 @@ import time
 from typing import Callable, Optional
 
 from . import parsers
-from .adb import AdbError
+from taprobot.adb import AdbError
 
 log = logging.getLogger("soak.guardian")
 

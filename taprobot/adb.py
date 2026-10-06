@@ -1,4 +1,7 @@
-"""Acesso ao celular via adb (USB ou Wi-Fi), com tempo-limite em todo comando."""
+"""Acesso ao celular via adb (USB ou Wi-Fi), com tempo-limite em todo comando.
+
+Usado pela calibração (leitura de toques), pelo soak e pela busca do celular.
+"""
 from __future__ import annotations
 
 import subprocess
@@ -27,9 +30,12 @@ class AdbClient:
             raise AdbError(f"adb {' '.join(args[:3])}: {err.strip() or 'falhou'}")
         return res.stdout
 
-    def shell(self, cmd: str, timeout: float = 20) -> str:
-        """Roda um comando no celular. Saída vazia não é erro (ex.: pidof sem processo)."""
-        return self._run(["shell", cmd], timeout)
+    def shell(self, *args: str, timeout: float = 20) -> str:
+        """Roda um comando no celular: shell("dumpsys battery") ou shell("wm", "size").
+
+        Saída vazia não é erro (ex.: pidof sem processo).
+        """
+        return self._run(["shell", *args], timeout)
 
     def exec_out(self, cmd: str, timeout: float = 30) -> bytes:
         return self._run(["exec-out", cmd], timeout, text=False)

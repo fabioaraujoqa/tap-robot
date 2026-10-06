@@ -13,7 +13,7 @@ import time
 import zlib
 from typing import Callable, Optional
 
-from .adb import AdbError
+from taprobot.adb import AdbError
 
 
 def tiny_png(w: int = 36, h: int = 82, rgb=(40, 90, 160)) -> bytes:

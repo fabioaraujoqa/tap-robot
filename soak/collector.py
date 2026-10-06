@@ -10,7 +10,7 @@ from pathlib import Path
 from typing import Callable, Optional
 
 from . import parsers
-from .adb import AdbError
+from taprobot.adb import AdbError
 
 COLUMNS = [
     "t_s", "time", "pid", "app_alive", "foreground", "screen_on",

@@ -10,20 +10,8 @@ import statistics
 import subprocess
 import threading
 import time
-from typing import Optional
 
-
-class Adb:
-    def __init__(self, path="adb", serial: Optional[str] = None):
-        self.cmd = [path] + (["-s", serial] if serial else [])
-
-    def shell(self, *args, timeout=15) -> str:
-        res = subprocess.run(
-            self.cmd + ["shell", *args], capture_output=True, text=True, timeout=timeout
-        )
-        if res.returncode != 0:
-            raise RuntimeError(f"adb falhou: {res.stderr.strip() or res.stdout.strip()}")
-        return res.stdout
+from .adb import AdbClient
 
 
 def parse_getevent_lp(text: str):
@@ -49,7 +37,7 @@ def parse_getevent_lp(text: str):
     return [d for d in devices if d["max_x"] and d["max_y"]]
 
 
-def find_touch_device(adb: Adb):
+def find_touch_device(adb: AdbClient):
     devices = parse_getevent_lp(adb.shell("getevent", "-lp"))
     if not devices:
         raise RuntimeError(
@@ -59,7 +47,7 @@ def find_touch_device(adb: Adb):
     return devices[0]
 
 
-def get_wm_size(adb: Adb):
+def get_wm_size(adb: AdbClient):
     """Tamanho físico da tela em px, ex.: (720, 1640)."""
     out = adb.shell("wm", "size")
     sizes = re.findall(r"(\d+)x(\d+)", out)
@@ -75,7 +63,7 @@ _LINE = re.compile(r"(EV_\w+)\s+(\w+)\s+(\w+)")
 class TouchReader:
     """Acompanha os toques do celular em segundo plano."""
 
-    def __init__(self, adb: Adb, device: dict, screen_w: int, screen_h: int):
+    def __init__(self, adb: AdbClient, device: dict, screen_w: int, screen_h: int):
         self.adb = adb
         self.device = device
         self.sx = (screen_w - 1) / device["max_x"]
@@ -90,7 +78,7 @@ class TouchReader:
 
     def start(self):
         self._proc = subprocess.Popen(
-            self.adb.cmd + ["shell", "getevent", "-l", self.device["path"]],
+            self.adb.base + ["shell", "getevent", "-l", self.device["path"]],
             stdout=subprocess.PIPE,
             stderr=subprocess.DEVNULL,
             text=True,

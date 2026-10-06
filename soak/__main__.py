@@ -15,9 +15,9 @@ import unicodedata
 from datetime import datetime
 from pathlib import Path
 
+from taprobot.adb import AdbClient, AdbError
 from taprobot.device import DeviceNotFound, resolve_udid
 
-from .adb import AdbClient, AdbError
 from .report import build_report
 from .scenario import ScenarioError, WearCounter, load_scenario
 
@@ -58,8 +58,8 @@ class TouchProbe:
     """Verificação de calibração real: toca e lê o pixel sentido pelo celular (getevent)."""
 
     def __init__(self, serial: str, adb_path: str = "adb"):
-        from taprobot.touch_reader import Adb, TouchReader, find_touch_device, get_wm_size
-        adb = Adb(adb_path, serial)
+        from taprobot.touch_reader import TouchReader, find_touch_device, get_wm_size
+        adb = AdbClient(serial, adb_path)
         w, h = get_wm_size(adb)
         self.reader = TouchReader(adb, find_touch_device(adb), w, h)
         self.reader.start()

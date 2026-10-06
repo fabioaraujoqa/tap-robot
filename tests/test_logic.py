@@ -138,7 +138,7 @@ def test_parse_getevent_lp():
 
 def test_touch_reader_state_machine():
     class FakeAdb:
-        cmd = ["adb"]
+        base = ["adb"]
 
     r = TouchReader(FakeAdb(), {"path": "p", "max_x": 719, "max_y": 1639}, 720, 1640)
     lines = [
