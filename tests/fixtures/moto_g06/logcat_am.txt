@@ -1,0 +1,2 @@
+10-06 00:29:39.169  1812  1923 I ActivityManager: Killing 29310:com.google.android.googlequicksearchbox:search/u0a148 (adj 995): empty #8
+10-06 00:29:40.452  1812  2385 I ActivityManager: Process com.android.settings:EthernetNotificationService (pid 25116) has died: cch+95 SVC 

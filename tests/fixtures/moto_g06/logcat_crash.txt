@@ -1,0 +1,66 @@
+--------- beginning of crash
+10-05 18:20:20.911 14808 14808 E AndroidRuntime: FATAL EXCEPTION: main
+10-05 18:20:20.911 14808 14808 E AndroidRuntime: Process: io.appium.settings, PID: 14808
+10-05 18:20:20.911 14808 14808 E AndroidRuntime: java.lang.RuntimeException: Unable to start service io.appium.settings.ForegroundService@5155fbf with Intent { act=start cmp=io.appium.settings/.ForegroundService }: java.lang.SecurityException: Starting FGS with type location callerApp=ProcessRecord{9a392f9 14808:io.appium.settings/u0a263} targetSDK=35 requires permissions: all of the permissions allOf=true [android.permission.FOREGROUND_SERVICE_LOCATION] any of the permissions allOf=false [android.permission.ACCESS_COARSE_LOCATION, android.permission.ACCESS_FINE_LOCATION]  and the app must be in the eligible state/exemptions to access the foreground only permission
+10-05 18:20:20.911 14808 14808 E AndroidRuntime: 	at android.app.ActivityThread.handleServiceArgs(ActivityThread.java:5207)
+10-05 18:20:20.911 14808 14808 E AndroidRuntime: 	at android.app.ActivityThread.-$$Nest$mhandleServiceArgs(Unknown Source:0)
+10-05 18:20:20.911 14808 14808 E AndroidRuntime: 	at android.app.ActivityThread$H.handleMessage(ActivityThread.java:2511)
+10-05 18:20:20.911 14808 14808 E AndroidRuntime: 	at android.os.Handler.dispatchMessage(Handler.java:107)
+10-05 18:20:20.911 14808 14808 E AndroidRuntime: 	at android.os.Looper.loopOnce(Looper.java:234)
+10-05 18:20:20.911 14808 14808 E AndroidRuntime: 	at android.os.Looper.loop(Looper.java:319)
+10-05 18:20:20.911 14808 14808 E AndroidRuntime: 	at android.app.ActivityThread.main(ActivityThread.java:8762)
+10-05 18:20:20.911 14808 14808 E AndroidRuntime: 	at java.lang.reflect.Method.invoke(Native Method)
+10-05 18:20:20.911 14808 14808 E AndroidRuntime: 	at com.android.internal.os.RuntimeInit$MethodAndArgsCaller.run(RuntimeInit.java:602)
+10-05 18:20:20.911 14808 14808 E AndroidRuntime: 	at com.android.internal.os.ZygoteInit.main(ZygoteInit.java:962)
+10-05 18:20:20.911 14808 14808 E AndroidRuntime: Caused by: java.lang.SecurityException: Starting FGS with type location callerApp=ProcessRecord{9a392f9 14808:io.appium.settings/u0a263} targetSDK=35 requires permissions: all of the permissions allOf=true [android.permission.FOREGROUND_SERVICE_LOCATION] any of the permissions allOf=false [android.permission.ACCESS_COARSE_LOCATION, android.permission.ACCESS_FINE_LOCATION]  and the app must be in the eligible state/exemptions to access the foreground only permission
+10-05 18:20:20.911 14808 14808 E AndroidRuntime: 	at android.os.Parcel.createExceptionOrNull(Parcel.java:3241)
+10-05 18:20:20.911 14808 14808 E AndroidRuntime: 	at android.os.Parcel.createException(Parcel.java:3225)
+10-05 18:20:20.911 14808 14808 E AndroidRuntime: 	at android.os.Parcel.readException(Parcel.java:3208)
+10-05 18:20:20.911 14808 14808 E AndroidRuntime: 	at android.os.Parcel.readException(Parcel.java:3150)
+10-05 18:20:20.911 14808 14808 E AndroidRuntime: 	at android.app.IActivityManager$Stub$Proxy.setServiceForeground(IActivityManager.java:7308)
+10-05 18:20:20.911 14808 14808 E AndroidRuntime: 	at android.app.Service.startForeground(Service.java:776)
+10-05 18:20:20.911 14808 14808 E AndroidRuntime: 	at io.appium.settings.ForegroundService.startForegroundService(ForegroundService.java:73)
+10-05 18:20:20.911 14808 14808 E AndroidRuntime: 	at io.appium.settings.ForegroundService.onStartCommand(ForegroundService.java:48)
+10-05 18:20:20.911 14808 14808 E AndroidRuntime: 	at android.app.ActivityThread.handleServiceArgs(ActivityThread.java:5189)
+10-05 18:20:20.911 14808 14808 E AndroidRuntime: 	... 9 more
+10-05 18:20:20.911 14808 14808 E AndroidRuntime: Caused by: android.os.RemoteException: Remote stack trace:
+10-05 18:20:20.911 14808 14808 E AndroidRuntime: 	at com.android.server.am.ActiveServices.validateForegroundServiceType(ActiveServices.java:2939)
+10-05 18:20:20.911 14808 14808 E AndroidRuntime: 	at com.android.server.am.ActiveServices.setServiceForegroundInnerLocked(ActiveServices.java:2623)
+10-05 18:20:20.911 14808 14808 E AndroidRuntime: 	at com.android.server.am.ActiveServices.setServiceForegroundLocked(ActiveServices.java:1877)
+10-05 18:20:20.911 14808 14808 E AndroidRuntime: 	at com.android.server.am.ActivityManagerService.setServiceForeground(ActivityManagerService.java:14395)
+10-05 18:20:20.911 14808 14808 E AndroidRuntime: 	at android.app.IActivityManager$Stub.onTransact(IActivityManager.java:3602)
+10-05 18:20:20.911 14808 14808 E AndroidRuntime: 
+10-05 18:20:22.226 14846 14846 E AndroidRuntime: FATAL EXCEPTION: main
+10-05 18:20:22.226 14846 14846 E AndroidRuntime: Process: io.appium.settings, PID: 14846
+10-05 18:20:22.226 14846 14846 E AndroidRuntime: java.lang.RuntimeException: Unable to start service io.appium.settings.ForegroundService@68160e7 with Intent { act=start cmp=io.appium.settings/.ForegroundService }: java.lang.SecurityException: Starting FGS with type location callerApp=ProcessRecord{d13577d 14846:io.appium.settings/u0a263} targetSDK=35 requires permissions: all of the permissions allOf=true [android.permission.FOREGROUND_SERVICE_LOCATION] any of the permissions allOf=false [android.permission.ACCESS_COARSE_LOCATION, android.permission.ACCESS_FINE_LOCATION]  and the app must be in the eligible state/exemptions to access the foreground only permission
+10-05 18:20:22.226 14846 14846 E AndroidRuntime: 	at android.app.ActivityThread.handleServiceArgs(ActivityThread.java:5207)
+10-05 18:20:22.226 14846 14846 E AndroidRuntime: 	at android.app.ActivityThread.-$$Nest$mhandleServiceArgs(Unknown Source:0)
+10-05 18:20:22.226 14846 14846 E AndroidRuntime: 	at android.app.ActivityThread$H.handleMessage(ActivityThread.java:2511)
+10-05 18:20:22.226 14846 14846 E AndroidRuntime: 	at android.os.Handler.dispatchMessage(Handler.java:107)
+10-05 18:20:22.226 14846 14846 E AndroidRuntime: 	at android.os.Looper.loopOnce(Looper.java:234)
+10-05 18:20:22.226 14846 14846 E AndroidRuntime: 	at android.os.Looper.loop(Looper.java:319)
+10-05 18:20:22.226 14846 14846 E AndroidRuntime: 	at android.app.ActivityThread.main(ActivityThread.java:8762)
+10-05 18:20:22.226 14846 14846 E AndroidRuntime: 	at java.lang.reflect.Method.invoke(Native Method)
+10-05 18:20:22.226 14846 14846 E AndroidRuntime: 	at com.android.internal.os.RuntimeInit$MethodAndArgsCaller.run(RuntimeInit.java:602)
+10-05 18:20:22.226 14846 14846 E AndroidRuntime: 	at com.android.internal.os.ZygoteInit.main(ZygoteInit.java:962)
+10-05 18:20:22.226 14846 14846 E AndroidRuntime: Caused by: java.lang.SecurityException: Starting FGS with type location callerApp=ProcessRecord{d13577d 14846:io.appium.settings/u0a263} targetSDK=35 requires permissions: all of the permissions allOf=true [android.permission.FOREGROUND_SERVICE_LOCATION] any of the permissions allOf=false [android.permission.ACCESS_COARSE_LOCATION, android.permission.ACCESS_FINE_LOCATION]  and the app must be in the eligible state/exemptions to access the foreground only permission
+10-05 18:20:22.226 14846 14846 E AndroidRuntime: 	at android.os.Parcel.createExceptionOrNull(Parcel.java:3241)
+10-05 18:20:22.226 14846 14846 E AndroidRuntime: 	at android.os.Parcel.createException(Parcel.java:3225)
+10-05 18:20:22.226 14846 14846 E AndroidRuntime: 	at android.os.Parcel.readException(Parcel.java:3208)
+10-05 18:20:22.226 14846 14846 E AndroidRuntime: 	at android.os.Parcel.readException(Parcel.java:3150)
+10-05 18:20:22.226 14846 14846 E AndroidRuntime: 	at android.app.IActivityManager$Stub$Proxy.setServiceForeground(IActivityManager.java:7308)
+10-05 18:20:22.226 14846 14846 E AndroidRuntime: 	at android.app.Service.startForeground(Service.java:776)
+10-05 18:20:22.226 14846 14846 E AndroidRuntime: 	at io.appium.settings.ForegroundService.startForegroundService(ForegroundService.java:73)
+10-05 18:20:22.226 14846 14846 E AndroidRuntime: 	at io.appium.settings.ForegroundService.onStartCommand(ForegroundService.java:48)
+10-05 18:20:22.226 14846 14846 E AndroidRuntime: 	at android.app.ActivityThread.handleServiceArgs(ActivityThread.java:5189)
+10-05 18:20:22.226 14846 14846 E AndroidRuntime: 	... 9 more
+10-05 18:20:22.226 14846 14846 E AndroidRuntime: Caused by: android.os.RemoteException: Remote stack trace:
+10-05 18:20:22.226 14846 14846 E AndroidRuntime: 	at com.android.server.am.ActiveServices.validateForegroundServiceType(ActiveServices.java:2939)
+10-05 18:20:22.226 14846 14846 E AndroidRuntime: 	at com.android.server.am.ActiveServices.setServiceForegroundInnerLocked(ActiveServices.java:2623)
+10-05 18:20:22.226 14846 14846 E AndroidRuntime: 	at com.android.server.am.ActiveServices.setServiceForegroundLocked(ActiveServices.java:1877)
+10-05 18:20:22.226 14846 14846 E AndroidRuntime: 	at com.android.server.am.ActivityManagerService.setServiceForeground(ActivityManagerService.java:14395)
+10-05 18:20:22.226 14846 14846 E AndroidRuntime: 	at android.app.IActivityManager$Stub.onTransact(IActivityManager.java:3602)
+10-05 18:20:22.226 14846 14846 E AndroidRuntime: 
+10-05 18:22:39.356 16186 16186 I libpq_sec: mtk-brm-commit-id:306fedb9a1b78830eb13208042517ecda13001b4
+10-05 18:22:39.357 16186 16186 I libpq_sec: mtk-brm-change-id:If1ee6bfee5a1c52eb9112283d79e553fc3babb9a
+10-05 18:22:39.357 16186 16186 I libpq_sec: mtk-brm-merge-id:none

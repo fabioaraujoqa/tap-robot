@@ -1,0 +1,2 @@
+  mCurrentFocus=Window{36055bc u0 NotificationShade}
+  mFocusedApp=ActivityRecord{d9c30ee u0 io.appium.android.apis/.ApiDemos t107}

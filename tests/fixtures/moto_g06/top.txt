@@ -1,0 +1,6 @@
+Tasks: 1 total,   0 running,   1 sleeping,   0 stopped,   0 zombie
+  Mem:  3821468K total,  3620128K used,   201340K free,     1900K buffers
+ Swap:  3439316K total,   566084K used,  2873232K free,  1795552K cached
+800%cpu 103%user  93%nice  10%sys 590%idle   0%iow   3%irq   0%sirq   0%host
+  PID USER         PR  NI VIRT  RES  SHR S[%CPU] %MEM     TIME+ ARGS
+12831 u0_a271      20   0  16G 155M 102M S  196   4.1   0:04.36 io.appium.android.apis

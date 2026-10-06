@@ -1,0 +1,6 @@
+10-06 01:12:03.512  1812  1990 E ActivityManager: ANR in io.appium.android.apis (io.appium.android.apis/.ApiDemos)
+10-06 01:12:03.512  1812  1990 E ActivityManager: PID: 12831
+10-06 01:12:03.512  1812  1990 E ActivityManager: Reason: Input dispatching timed out (d9c30ee io.appium.android.apis/.ApiDemos is not responding. Waited 5001ms for MotionEvent)
+10-06 01:15:44.020 13990 13990 F libc    : Fatal signal 11 (SIGSEGV), code 1 (SEGV_MAPERR), fault addr 0x0 in tid 13990 (um.android.apis), pid 13990 (um.android.apis)
+10-06 01:15:44.300 14002 14002 F DEBUG   : pid: 13990, tid: 13990, name: um.android.apis  >>> io.appium.android.apis <<<
+10-06 01:15:45.001  1812  2385 I ActivityManager: Process io.appium.android.apis (pid 13990) has died: fg  TOP

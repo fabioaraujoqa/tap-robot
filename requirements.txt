@@ -1,0 +1,5 @@
+paho-mqtt>=1.6
+numpy>=1.24
+PyYAML>=6.0
+# Só necessário para a integração com os seus testes:
+Appium-Python-Client>=3.0

@@ -1,0 +1,46 @@
+# Copie para config.yaml e edite. Nunca versione o config.yaml (tem o access code).
+
+printer:
+  ip: "COLOQUE_O_IP_DA_P1S"            # Tela da impressora > Rede
+  serial: "COLOQUE_O_SERIAL"           # Tela > Geral (ou etiqueta da impressora)
+  access_code: "COLOQUE_O_ACCESS_CODE" # Tela > Rede (modo LAN)
+
+motion:
+  # ---- Z: na Bambu, Z = distância entre o bico e a mesa (Z maior = mesa mais baixa).
+  # Z MÍNIMO PERMITIDO. É a trava de segurança contra esmagar o celular.
+  # Calcule com folga: espessura da base do gabarito (3 mm) + celular (8,31 mm)
+  # + quanto a ponta da caneta passa ABAIXO do bico - 1 mm de folga mecânica.
+  # Se o valor ficar errado para baixo, a mesa sobe demais. Na dúvida, use um valor ALTO
+  # e abaixe aos poucos depois de ver o toque funcionando.
+  z_floor: null          # <-- OBRIGATÓRIO (ex.: 14.0)
+  z_start: 40.0          # altura segura de partida da calibração (bem acima da tela)
+  z_max: 80.0
+
+  # ---- Limites XY do bico (mm). Lembre que a ponteira pode estar deslocada do bico.
+  x_min: 10
+  x_max: 245
+  y_min: 10
+  y_max: 245
+
+  # ---- Toque
+  hover_mm: 2.0          # altura de deslocamento acima do ponto de contato
+  press_mm: 0.4          # quanto "afunda" a mola da ponteira depois de tocar
+  tap_dwell_ms: 60       # tempo encostado
+  feed_xy: 6000          # mm/min deslocamento
+  feed_z: 1200           # mm/min subida/descida longa
+  feed_z_touch: 300      # mm/min aproximação final (devagar = menos impacto)
+  max_feed_swipe: 9000
+  settle_s: 0.15         # folga depois de cada movimento
+  home_wait_s: 90
+  # park: [20, 20]       # opcional: onde estacionar a ponteira (XY)
+
+screen:                  # Moto G06
+  width_px: 720
+  height_px: 1640
+  margin_px: 4
+
+adb:
+  path: adb
+  serial: null           # udid do celular, se houver mais de um dispositivo
+
+calibration_file: calibration.json

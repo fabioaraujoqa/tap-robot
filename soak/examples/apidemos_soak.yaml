@@ -1,0 +1,70 @@
+# Teste de resistência (soak) no ApiDemos, com o celular NO CARREGADOR.
+# Foco: vazamento de memória, queda de fluidez, crash e ANR.
+#
+# As coordenadas abaixo são ESTIMADAS (densidade 280 dpi do Moto G06). Antes da
+# primeira execução real, confira com:  python -m soak ui --serial <IP:porta>
+#
+#   python -m soak run soak/examples/apidemos_soak.yaml --serial <IP:porta>
+
+name: ApiDemos - navegação (soak)
+package: io.appium.android.apis
+activity: .ApiDemos          # usado para reabrir o app se ele cair
+mode: soak                   # soak = carregador | consumo = bateria
+seed: 42                     # mesma semente = mesma sequência de variações
+duration_min: 10             # 10 min -> 60 min -> 480 min (uma noite)
+min_interval_s: 1.5          # intervalo mínimo entre toques
+jitter_px: 6                 # variação aleatória de cada toque (± px)
+screen: [720, 1640]
+
+pause:                       # pausa ociosa: o app parado também revela vazamentos
+  every_iterations: 20
+  seconds: 60
+
+sampling:
+  interval_s: 60             # amostra completa (memória, quadros, CPU, bateria...)
+  heartbeat_s: 10            # checagem rápida (app vivo, tela ligada, adb)
+  screenshot_every_min: 10
+
+# Toque periódico num ponto NEUTRO para conferir a calibração (o toque chega ao app!).
+# A barra de título do ApiDemos não faz nada ao ser tocada.
+calibration_check:
+  x: 360
+  y: 110
+  every_min: 15
+  tolerance_px: 30
+
+limits:
+  max_touches: 20000
+  app_restarts_max: 3
+  adb_offline_max_s: 120
+  robot_errors_max: 3
+  battery_temp_max_c: 45
+
+verdict:
+  mem_slope_warn_mb_h: 5
+  mem_slope_fail_mb_h: 20
+  janky_warn_pct: 10
+  janky_fail_pct: 25
+  temp_warn_c: 40
+
+steps:
+  - tap: [360, 350]          # "App"
+    name: abrir App
+  - wait: [1.0, 2.0]
+  - swipe: [360, 1300, 360, 500]
+    duration_s: 0.4
+    name: rolar a lista
+  - wait: 1.0
+  - key: BACK                # via adb (não é toque físico)
+  - wait: 1.0
+  - tap: [360, 1022]         # "Views"
+    name: abrir Views
+  - wait: [1.0, 2.0]
+  - swipe: [360, 1300, 360, 400]
+    duration_s: 0.4
+  - wait: 1.0
+  - swipe: [360, 400, 360, 1300]
+    duration_s: 0.4
+  - wait: 1.0
+  - key: BACK
+  - wait: [2.0, 4.0]

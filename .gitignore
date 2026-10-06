@@ -1,0 +1,18 @@
+# Segredos e dados da montagem local
+config.yaml
+calibration.json
+
+# Execuções do teste de resistência (CSV, capturas, relatórios, contador de desgaste)
+runs/
+
+# Ambiente
+.venv/
+node_modules/
+__pycache__/
+.pytest_cache/
+
+# Projeto de terceiros guardado aqui só como referência (BambuScribe, GPLv3)
+BambuScribe-app/
+
+# macOS
+.DS_Store

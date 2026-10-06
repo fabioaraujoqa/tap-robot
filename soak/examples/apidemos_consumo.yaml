@@ -1,0 +1,50 @@
+# Teste de CONSUMO no ApiDemos, com o celular NA BATERIA (sem cabo).
+# Foco: %/h e mAh/h de bateria, temperatura e CPU sob uso contínuo.
+#
+# Requisitos:
+#  - adb pelo Wi-Fi (o cabo USB carregaria o celular e invalidaria a medida);
+#  - brilho fixo (desligue o brilho automático) para comparar execuções;
+#  - tempo de tela apagada maior que o teste ("Permanecer ativo" só vale no carregador).
+#
+#   python -m soak run soak/examples/apidemos_consumo.yaml --serial <IP:porta>
+
+name: ApiDemos - consumo de bateria
+package: io.appium.android.apis
+activity: .ApiDemos
+mode: consumo
+seed: 7
+duration_min: 60             # consumo precisa de tempo: < 30 min dá pouca resolução
+min_interval_s: 2.0
+jitter_px: 6
+screen: [720, 1640]
+
+sampling:
+  interval_s: 60
+  heartbeat_s: 10
+  screenshot_every_min: 15
+
+calibration_check:
+  x: 360
+  y: 110
+  every_min: 20
+  tolerance_px: 30
+
+limits:
+  battery_temp_max_c: 42     # na bateria o aquecimento pesa mais
+  app_restarts_max: 2
+
+verdict:
+  drain_warn_pct_h: 15       # mais que isso por hora merece atenção
+  temp_warn_c: 38
+
+steps:
+  - tap: [360, 1022]         # "Views"
+  - wait: [1.5, 3.0]
+  - swipe: [360, 1300, 360, 400]
+    duration_s: 0.5
+  - wait: 2.0
+  - swipe: [360, 400, 360, 1300]
+    duration_s: 0.5
+  - wait: 2.0
+  - key: BACK
+  - wait: [3.0, 6.0]

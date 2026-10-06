@@ -1,0 +1,1 @@
+  ResumedActivity: ActivityRecord{d9c30ee u0 io.appium.android.apis/.ApiDemos t107}
