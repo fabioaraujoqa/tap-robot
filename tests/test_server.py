@@ -10,7 +10,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 import pytest
 
-from server import make_server
+from tools.server import make_server
 from taprobot import RobotTap
 from tests.test_logic import Recorder, make_cal, make_cfg
 

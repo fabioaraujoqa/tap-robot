@@ -1,6 +1,7 @@
 """Linha de comando do teste de resistência.
 
   python -m soak run cenario.yaml [--serial IP:porta] [--duration-min N] [--yes]
+      (sem --serial: acha o Moto G06 sozinho, no USB ou no Wi-Fi)
   python -m soak run cenario.yaml --dry-run          # sem P1S e sem celular (dados falsos)
   python -m soak report runs/<pasta>                 # (re)gera o relatório
   python -m soak ui [--serial IP:porta]              # lista itens da tela com coordenadas
@@ -14,7 +15,9 @@ import unicodedata
 from datetime import datetime
 from pathlib import Path
 
-from .adb import AdbClient, AdbError, pick_serial
+from taprobot.device import DeviceNotFound, resolve_udid
+
+from .adb import AdbClient, AdbError
 from .report import build_report
 from .scenario import ScenarioError, WearCounter, load_scenario
 
@@ -23,7 +26,7 @@ ROOT = Path(__file__).resolve().parents[1]
 CHECKLIST = """
 ATENÇÃO: a impressora vai se mover sozinha durante todo o teste.
   1. A P1S foi homed (G28) com a mesa VAZIA e não foi desligada desde então.
-  2. calibration.json é desta montagem (`python calibrate.py verify` passou há pouco).
+  2. calibration.json é desta montagem (`python -m tools.calibrate verify` passou há pouco).
   3. motion.z_floor no config.yaml está correto para o celular na base.
   4. A base está presa na mesa e o celular firme nela; nenhum cabo no caminho da ponteira.
   5. Tela desbloqueada e configurada para não apagar durante o teste.
@@ -129,9 +132,9 @@ def cmd_run(args) -> int:
         cfg = load_config(args.config)
         cal_path = Path(cfg["_dir"]) / cfg["calibration_file"]
         if not cal_path.exists():
-            print(f"ERRO: {cal_path.name} não existe. Calibre antes: python calibrate.py run")
+            print(f"ERRO: {cal_path.name} não existe. Calibre antes: python -m tools.calibrate run")
             return 2
-        serial = args.serial or cfg["adb"].get("serial") or pick_serial(cfg["adb"]["path"])
+        serial = args.serial or cfg["adb"].get("serial") or resolve_udid(adb=cfg["adb"]["path"])
         adb = AdbClient(serial, cfg["adb"]["path"])
         print(CHECKLIST)
         if not args.yes and input("Digite 'sim' para começar: ").strip().lower() != "sim":
@@ -180,7 +183,7 @@ def cmd_report(args) -> int:
 
 def cmd_ui(args) -> int:
     """Itens visíveis com texto e o centro em px: ajuda a montar o cenário."""
-    adb = AdbClient(args.serial or pick_serial())
+    adb = AdbClient(args.serial or resolve_udid())
     adb.shell("uiautomator dump /sdcard/soak_ui.xml")
     xml = adb.exec_out("cat /sdcard/soak_ui.xml").decode(errors="replace")
     found = 0
@@ -219,7 +222,7 @@ def main(argv=None) -> int:
     args = ap.parse_args(argv)
     try:
         return {"run": cmd_run, "report": cmd_report, "ui": cmd_ui}[args.cmd](args)
-    except (ScenarioError, AdbError) as exc:
+    except (ScenarioError, AdbError, DeviceNotFound) as exc:
         print(f"ERRO: {exc}")
         return 2
 

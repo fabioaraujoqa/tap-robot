@@ -50,14 +50,3 @@ class AdbClient:
         if self._logcat is not None:
             self._logcat.terminate()
             self._logcat = None
-
-
-def pick_serial(path: str = "adb") -> str:
-    """Único aparelho conectado; com mais de um, é preciso escolher com --serial."""
-    out = subprocess.run([path, "devices"], capture_output=True, text=True, timeout=15).stdout
-    ready = [ln.split()[0] for ln in out.splitlines()[1:] if ln.strip().endswith("device")]
-    if len(ready) == 1:
-        return ready[0]
-    if not ready:
-        raise AdbError("nenhum celular no adb. Conecte o cabo ou rode `npm run connect` (Wi-Fi).")
-    raise AdbError(f"mais de um aparelho ({', '.join(ready)}): escolha com --serial")

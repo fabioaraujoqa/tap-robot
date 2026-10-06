@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """Calibração do robô de toque usando os próprios toques lidos via adb.
 
-  python calibrate.py run      # calibração completa (jog -> detecta Z -> grade -> salva)
-  python calibrate.py verify   # toca pontos aleatórios e mede o erro
-  python calibrate.py jog      # só movimenta manualmente (diagnóstico)
+  python -m tools.calibrate run      # calibração completa (jog -> detecta Z -> grade -> salva)
+  python -m tools.calibrate verify   # toca pontos aleatórios e mede o erro
+  python -m tools.calibrate jog      # só movimenta manualmente (diagnóstico)
 
 Pré-requisitos: P1S já "homed" com a MESA VAZIA, gabarito e celular montados,
 tela ligada/desbloqueada (ative "Permanecer ativo" nas opções do desenvolvedor),
@@ -229,7 +229,7 @@ def cmd_run(args):
         if cal.fit_error_mm > 0.5:
             print("AVISO: erro alto. Verifique se o celular está firme no gabarito e repita.")
         robot.park()
-        print("Agora rode: python calibrate.py verify")
+        print("Agora rode: python -m tools.calibrate verify")
     finally:
         safe_lift(robot)
         reader.stop()

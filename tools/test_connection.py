@@ -42,7 +42,7 @@ def main():
         print("Executando G28... (aguarde)")
         link.send_gcode("G28")
         time.sleep(cfg["motion"]["home_wait_s"])
-        print("Homing enviado. Agora monte o gabarito e o celular e rode `python calibrate.py run`.")
+        print("Homing enviado. Agora monte o gabarito e o celular e rode `python -m tools.calibrate run`.")
 
     link.close()
 

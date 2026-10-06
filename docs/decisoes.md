@@ -3,68 +3,48 @@
 Registro do porquê das escolhas do projeto e do que foi aprendido no hardware real.
 O "como usar" fica no [README](../README.md).
 
-## 1. Que parte fica em qual linguagem
+## 1. Tudo em Python, testes em Robot Framework
 
-| Parte | Linguagem | Onde |
-|---|---|---|
-| Robô (MQTT, G-code, travas de segurança, calibração, leitura de toque) | Python | `taprobot/`, `calibrate.py` |
-| Servidor HTTP do robô (para testes em outras linguagens) | Python | `server.py` |
-| Teste de resistência e de consumo | Python (cenário em YAML) | `soak/` |
-| Testes funcionais Appium | JS (WebdriverIO) | `specs/`, `wdio.conf.js`, `wdio/` |
-| Integração com pytest (alternativa aos testes em JS) | Python | `examples/`, `taprobot/appium_patch.py` |
+Em 6 de outubro de 2026 os testes em JS (WebdriverIO) foram trocados por **Robot Framework
++ AppiumLibrary**, e o projeto ficou todo em Python. O estado anterior, com o JS, está no
+primeiro commit do repositório.
 
-A regra combinada: **as integrações com o hardware ficam em Python**; os testes podem ser
-em qualquer linguagem, falando com o robô pelo `server.py`.
+| Parte | Onde |
+|---|---|
+| Robô (MQTT, G-code, travas de segurança, calibração, leitura de toque, busca do celular) | `taprobot/` |
+| Testes Appium (palavras-chave) | `robot/` |
+| Teste de resistência e de consumo (cenário em YAML) | `soak/` |
+| Linha de comando (calibração, teste de conexão, servidor HTTP) | `tools/` |
+| Testes unitários (pytest, sem hardware) | `tests/` |
 
-## 2. Por que o soak é em Python e não em JS
+**Por quê.** Uma linguagem só: o robô entra nos testes no mesmo processo, sem o servidor
+HTTP no meio, e qualquer parte do projeto pode ser mantida pela mesma pessoa. O Robot
+Framework foi escolhido (e não pytest puro) porque palavras-chave legíveis e o relatório
+pronto (log.html/report.html) valem muito para testes de QA, e já era familiar.
 
-O soak não é um teste do mesmo tipo dos specs: é infraestrutura que roda horas sem
-ninguém olhando. Quem escreve o roteiro edita só o YAML, sem programar.
+**Formato dos testes.** Parecido com um projeto Robot simples (um resource de sessão +
+testes), com duas camadas a mais por causa do robô:
 
-- **Segurança.** O guardião controla o robô no mesmo processo e chama `park()` em qualquer
-  saída, inclusive Ctrl+C e exceções. Em JS, isso passaria pelo HTTP do `server.py`: se o
-  processo JS morresse, ninguém estacionaria a ponteira.
-- **Reaproveitamento.** A verificação de calibração usa o `TouchReader` (getevent), a
-  conversão px → mm e as travas (`z_floor`, limites XY), que já existem em Python.
-- **Análise.** As tendências de memória e consumo usam regressão linear (numpy).
-- **Menos peças numa noite inteira.** Um processo só, sem Appium nem WebdriverIO, que
-  tendem a derrubar sessões longas.
+- `robo.resource` tem o `Clicar`: toque físico com `ROBO=True`, clique por software sem.
+  O mesmo teste roda nos dois modos, e o modo simulado valida tudo sem a P1S.
+- `pages/*.resource` guarda seletores e ações de cada tela (page object leve), para os
+  `.robot` ficarem só com passos legíveis.
 
-O que se perde: quem não conhece Python não consegue mexer no coletor, no guardião ou no
-relatório. E o cenário usa coordenadas fixas, não localiza elementos pelo Appium.
+**O que ficou de fora do Robot, de propósito.** O soak roda em Python puro (não como
+teste Robot): ele roda horas sem ninguém olhando, e o guardião precisa controlar o robô
+diretamente para estacionar a ponteira em qualquer falha. Quem escreve o roteiro edita só o
+YAML. O servidor HTTP continua em `tools/` para quem quiser usar o robô de outra linguagem,
+e `examples/` mostra a alternativa em pytest.
 
-## 3. Próximo passo possível: modo monitor
+## 2. Próximo passo possível: soak com fluxo em Robot
 
-Se um app real tiver layout que muda (coordenadas fixas frágeis), criar
-`python -m soak monitor`: só coleta, vigia e gera o relatório, enquanto o roteiro de toques
-é um spec (JS ou Python) em laço usando o robô pelo `server.py` e localizando elementos
-pelo Appium. Custos: o guardião precisa avisar o spec para parar (ex.: o `server.py`
-passa a recusar toques depois de um aborto) e estacionar a ponteira depende do servidor.
-Não foi feito: só vale a pena quando houver esse app.
+O cenário do soak usa coordenadas fixas. Se um app real tiver layout que muda, uma opção é
+um modo `python -m soak monitor`, que só coleta, vigia e gera o relatório, enquanto uma
+suíte Robot roda em laço localizando elementos pelo Appium. O guardião precisaria avisar a
+suíte para parar (ex.: a `TapRobotLibrary` passa a recusar toques depois de um aborto).
+Só vale a pena quando houver esse app.
 
-## 4. Caminho para o projeto todo em Python
-
-Os testes Appium também podem ser em Python, e aí o robô entra direto, sem HTTP.
-Duas opções; as duas usam o mesmo Appium, o mesmo `taprobot` e o mesmo soak.
-
-**pytest + Appium-Python-Client.** Já tem exemplo pronto (`examples/conftest_example.py`):
-todo `element.click()` vira toque físico. É Python comum, flexível para lógica (laços,
-dados de teste, esperas complexas) e fácil de depurar.
-
-**Robot Framework + AppiumLibrary.** Testes escritos como palavras-chave legíveis por
-quem não programa, e um relatório HTML (log + report) muito bom sem esforço. Para o
-robô, basta uma biblioteca de palavras-chave em Python que envolva o `RobotTap`
-(ex.: `Toque Físico No Elemento`, `Arraste Físico`), já que o Robot carrega classes
-Python diretamente. Contras: é mais uma linguagem (a sintaxe do Robot), lógica complexa
-fica desajeitada e a depuração é mais difícil.
-
-Critério sugerido: se os testes vão ser lidos ou escritos por gente de QA sem perfil de
-programação, ou se o relatório pronto pesa muito, **Robot Framework**. Se é você quem
-escreve tudo e quer aprender Python de verdade, **pytest** (e, se quiser, o Robot depois,
-porque as palavras-chave dele são escritas em Python mesmo). Não há pressa em migrar os
-specs do WebdriverIO: eles funcionam e falam com o robô pelo `server.py`.
-
-## 5. Aprendizados no hardware (5 e 6 de outubro de 2026)
+## 3. Aprendizados no hardware (5 e 6 de outubro de 2026)
 
 **Rede e P1S**
 - Mac, celular e impressora precisam estar na mesma rede (a da impressora).
@@ -90,7 +70,7 @@ specs do WebdriverIO: eles funcionam e falam com o robô pelo `server.py`.
 
 **Celular (Moto G06, Android 15)**
 - Depuração por Wi-Fi: parear uma vez (`adb pair`); a porta muda a cada vez que a depuração
-  é religada ou a rede muda (`npm run connect` acha a porta nova). Ao trocar de rede, é
+  é religada ou a rede muda (`python -m taprobot.device` acha a porta nova; os testes Robot fazem isso sozinhos). Ao trocar de rede, é
   preciso religar a depuração no celular e aceitar a rede.
 - O app Appium Settings fecha sozinho no Android 15 sem permissão de localização
   ("Appium Settings app is not running"). Correção, uma vez por instalação:
@@ -99,10 +79,12 @@ specs do WebdriverIO: eles funcionam e falam com o robô pelo `server.py`.
 - A tela apaga em 60 s e o celular tem bloqueio de tela: para testes longos, desbloquear e
   ligar "Permanecer ativo" (no carregador) ou aumentar o tempo de tela (na bateria).
 
-## 6. Pendências para o uso real
+## 4. Pendências para o uso real
 
 1. Trocar a caneta pela ponteira de borracha condutiva (no mesmo módulo).
 2. Imprimir e testar o gabarito do celular (`cad/phone_jig.scad`).
-3. Definir `motion.z_floor` no `config.yaml` (hoje vazio) e rodar `python calibrate.py run`.
+3. Definir `motion.z_floor` no `config.yaml` (hoje vazio) e rodar `python -m tools.calibrate run`.
 4. Confirmar as coordenadas dos cenários de exemplo com `python -m soak ui`.
-5. Primeiro soak real: 10 min, acompanhando de perto.
+5. Rodar `robot -d results robot/tests` com o celular desbloqueado (a migração para o Robot
+   só foi testada até abrir a sessão: o celular estava bloqueado).
+6. Primeiro soak real: 10 min, acompanhando de perto.

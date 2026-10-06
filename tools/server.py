@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Servidor HTTP local que expõe o robô para testes em qualquer linguagem (ex.: WebdriverIO).
 
-  python server.py                 # sobe em http://127.0.0.1:8765
-  python server.py --dry-run       # não envia nada à impressora (só imprime o G-code)
+  python -m tools.server                 # sobe em http://127.0.0.1:8765
+  python -m tools.server --dry-run       # não envia nada à impressora (só imprime o G-code)
 
 No --dry-run, sem config.yaml ou sem calibration.json, usa valores simulados (o /health
 responde "simulated": true). Serve para testar a integração dos testes sem hardware.

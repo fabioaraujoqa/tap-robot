@@ -5,9 +5,11 @@ calibration.json
 # Execuções do teste de resistência (CSV, capturas, relatórios, contador de desgaste)
 runs/
 
+# Saída do Robot Framework (log.html, report.html, output.xml, capturas)
+results/
+
 # Ambiente
 .venv/
-node_modules/
 __pycache__/
 .pytest_cache/
 

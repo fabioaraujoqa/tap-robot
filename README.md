@@ -27,7 +27,7 @@ P1S → ponteira toca a tela
    com o firmware). Anote **IP**, **número de série** e **access code**.
 2. Copie `config.example.yaml` para `config.yaml` e preencha. Não versione esse arquivo.
 3. `pip install -r requirements.txt`
-4. `python test_connection.py --latency`: conecta, envia um comando inofensivo e mede o
+4. `python -m tools.test_connection --latency`: conecta, envia um comando inofensivo e mede o
    tempo de resposta. Se aparecer "sem ack", o formato do comando pode ter mudado no
    seu firmware (veja *Solução de problemas*).
 
@@ -54,7 +54,7 @@ P1S → ponteira toca a tela
 
 - **Faça o homing (G28) com a mesa VAZIA.** Em alguns modelos o homing em Z encosta o
   bico/cabeçote na mesa; com o celular montado isso poderia esmagá-lo.
-  `python test_connection.py --home --bed-empty` e só depois monte gabarito e celular.
+  `python -m tools.test_connection --home --bed-empty` e só depois monte gabarito e celular.
   Depois disso **não reinicie nem desligue a impressora** durante a sessão, e não
   desative os motores (a posição Z se perde).
 - Z na Bambu é a **distância bico–mesa**: Z maior = mesa mais baixa. Tocar = diminuir Z.
@@ -70,7 +70,7 @@ P1S → ponteira toca a tela
 Fluxo (≈ 3 minutos, quase todo automático):
 
 ```bash
-python calibrate.py run
+python -m tools.calibrate run
 ```
 
 1. Você leva a ponteira, por comandos de jog (`x+ 5`, `y- 2`, `z- 10`), até ficar em cima
@@ -82,80 +82,77 @@ python calibrate.py run
 4. Ajusta uma transformação afim, salva em `calibration.json` e mostra o erro máximo
    (bom: < 0,5 mm).
 
-Depois: `python calibrate.py verify` toca 10 pontos e mede o erro real.
+Depois: `python -m tools.calibrate verify` toca 10 pontos e mede o erro real.
 
 Recalibre se mudar a posição do gabarito, a ponteira, ou a resolução/escala de exibição
 do celular.
 
-## 5. Usar nos testes Appium
+## 5. Testes Appium com Robot Framework
 
-Sem mudar os testes existentes (pytest): copie as fixtures de `examples/conftest_example.py`
-para o seu `conftest.py`. Todo `element.click()` passa a ser físico.
-
-Sem pytest, em qualquer script:
-
-```python
-from taprobot.appium_patch import physical_clicks
-with physical_clicks(robot):
-    driver.find_element(...).click()      # toque físico
-robot.swipe_px(360, 1200, 360, 500)       # rolagem física
-```
-
-Exemplo completo: `examples/appium_example.py`.
-
-### Testes em WebdriverIO (JS) com o robô em Python
-
-O robô fica todo no Python, como um serviço local; os testes JS só chamam uma API HTTP.
-
-O projeto já vem com um WebdriverIO configurado para o Moto G06 (`wdio.conf.js`, testes em
-`specs/`, app de exemplo ApiDemos em `apps/`). Instalação:
+Os testes ficam em `robot/`, no estilo palavra-chave do Robot Framework + AppiumLibrary.
+O Appium localiza o elemento; com `ROBO=True`, o toque é feito pela ponteira da P1S.
 
 ```bash
-npm install
 python3 -m venv .venv && .venv/bin/pip install -r requirements.txt
+appium                                                        # outro terminal
+
+robot -d results robot/tests                                  # clique por software
+robot -d results -v ROBO:True robot/tests                     # toque físico (P1S calibrada)
+robot -d results -v ROBO:True -v SIMULADO:True robot/tests    # robô simulado, sem a P1S
+robot -d results -e addnumber robot/tests                     # sem o AddNumber (exige instalar à mão)
 ```
 
-```bash
-# Só o Appium (clique por software)
-appium                                  # terminal 1
-npm run wdio                            # terminal 2
-
-# Com o robô
-appium                                  # terminal 1
-.venv/bin/python server.py              # terminal 2  (--dry-run: sem a impressora)
-npm run wdio:robot                      # terminal 3
+```
+robot/
+  libraries/TapRobotLibrary.py      palavras-chave do robô físico (envolve o RobotTap)
+  resources/base.resource           sessão Appium; acha o celular sozinho (USB ou Wi-Fi)
+  resources/robo.resource           "Clicar": físico com ROBO=True, por software sem
+  resources/pages/*.resource        seletores e ações de cada tela
+  tests/*.robot                     casos de teste
 ```
 
-- `--dry-run` sem `config.yaml`/`calibration.json` usa valores **simulados**: o servidor
-  imprime o G-code de cada toque e o teste também clica por software para seguir em frente.
-  Serve para validar a integração sem hardware; as coordenadas em mm não significam nada.
-- Celular: o `wdio.conf.js` acha o Moto G06 sozinho, no cabo USB ou na Depuração por Wi-Fi
-  (descobre o IP:porta e faz o `adb connect`; precisa ter pareado uma vez com `adb pair`).
-  Só conectar: `npm run connect`. Outro aparelho: `ANDROID_UDID=<serial ou IP:porta> npm run wdio`.
+**Palavras-chave do robô** (`TapRobotLibrary`), todas em pixels da tela:
+`Conectar Robô`, `Desconectar Robô` (estaciona a ponteira), `Toque Físico No Elemento`,
+`Toque Longo Físico No Elemento`, `Toque Físico Em Coordenada`,
+`Toque Longo Físico Em Coordenada`, `Arraste Físico`, `Estacionar Ponteira`,
+`Descobrir Celular`. Nos testes, use `Clicar    ${LOCATOR}` (de `robo.resource`): o mesmo
+teste roda com ou sem o robô.
 
-- `wdio/robot-client.js`: cliente (Node 18+, usa `fetch`).
-- `wdio/wdio.conf.snippet.js`: trechos para o seu `wdio.conf.js`. Com `ROBOT=1`, todo
-  `element.click()` vira toque físico; sem a variável, os testes rodam como antes.
-  Também cria `browser.robotSwipe(...)` e `browser.robotLongPress(...)`.
-- Rotas: `GET /health`, `POST /tap`, `/long_press`, `/swipe`, `/park`, sempre em pixels.
-  Cada chamada só responde quando o movimento estimado termina, então o `await` espera o toque.
-- O servidor escuta só em `127.0.0.1` e **não tem autenticação**. Não exponha na rede.
-- Outros comandos do WebdriverIO que fazem toque por dentro (ex.: `element.tap()`,
-  `touchAction`) não são interceptados; use `robot.tap(...)` ou sobrescreva-os do mesmo jeito.
-- Testado: o WebdriverIO no Moto G06 com e sem `ROBOT=1` (servidor em dry-run simulado).
-  Não foi testado com a P1S.
+Um teste novo segue o padrão de `robot/tests/apidemos.robot`: seletores e ações num
+`.resource` em `pages/`, e o `.robot` só com os passos legíveis.
+
+- **Celular:** sem `-v UDID:...`, o `base.resource` acha o Moto G06 sozinho, no cabo USB ou
+  na Depuração por Wi-Fi (descobre o IP:porta e faz o `adb connect`; precisa ter pareado
+  uma vez com `adb pair`). Só conectar: `python -m taprobot.device`.
+  Outro aparelho: `-v UDID:<serial ou IP:porta>`.
+- **Tela desbloqueada:** com a tela de bloqueio aparecendo, o app abre por trás dela e
+  nenhum elemento é encontrado.
+- **Simulado:** o G-code de cada toque vai para o `log.html` e o teste também clica por
+  software para seguir em frente. Valida os testes sem hardware; as coordenadas em mm
+  não significam nada.
+- O robô roda **no mesmo processo** do Robot: o `Desconectar Robô` do teardown estaciona a
+  ponteira mesmo quando o teste falha.
 
 Observações:
-- O Appium segue fazendo `send_keys`, screenshots e esperas por software. Só o toque é físico.
+- O Appium segue fazendo digitação, capturas de tela e esperas por software. Só o toque é físico.
 - Toques fora da tela (elemento parcialmente visível com centro fora) geram erro claro.
 - Cada toque leva ~1–2 s (descer devagar protege a tela). Depois que tudo estiver estável,
   aumente `feed_z_touch`/`feed_xy` no config e reduza `tap_dwell_ms` para acelerar.
+
+### Outras formas de usar o robô
+
+- **Servidor HTTP** (`python -m tools.server`, `--dry-run` sem a impressora): expõe o robô
+  para testes em qualquer linguagem. Rotas `GET /health`, `POST /tap`, `/long_press`,
+  `/swipe`, `/park`, sempre em pixels; cada chamada só responde quando o movimento estimado
+  termina. Escuta só em `127.0.0.1` e **não tem autenticação**: não exponha na rede.
+- **pytest:** `examples/conftest_example.py` transforma todo `element.click()` em toque
+  físico (`taprobot.appium_patch.physical_clicks`). Exemplo em `examples/appium_example.py`.
 
 ## 6. Teste de resistência (soak) e de consumo
 
 O módulo `soak/` roda um cenário em laço com toque físico enquanto mede o celular via
 adb, e no fim gera um relatório. Serve para achar vazamento de memória, queda de fluidez,
-aquecimento, consumo de bateria, crashes e ANRs. Usa o `RobotTap` direto (sem `server.py`),
+aquecimento, consumo de bateria, crashes e ANRs. Usa o `RobotTap` direto (sem o servidor HTTP),
 então todas as travas de segurança do `taprobot` continuam valendo.
 
 ```bash
@@ -210,7 +207,7 @@ Rode **10 min**, depois **1 h** e só então **uma noite inteira**
 (`--duration-min 10`, `60`, `480`). Antes de cada etapa:
 
 - [ ] `python -m soak run ... --dry-run` passou (valida o cenário sem mover nada).
-- [ ] P1S homed com a mesa vazia; `python calibrate.py verify` passou há pouco.
+- [ ] P1S homed com a mesa vazia; `python -m tools.calibrate verify` passou há pouco.
 - [ ] `motion.z_floor` correto para o celular na base.
 - [ ] Base presa na mesa, celular firme; nenhum cabo no caminho da ponteira.
 - [ ] Tela desbloqueada e sem apagar: "Permanecer ativo" (carregador) ou tempo de tela
@@ -239,6 +236,8 @@ Rode **10 min**, depois **1 h** e só então **uma noite inteira**
 | Timeout ao conectar | IP, Modo LAN ligado, PC na mesma rede, porta 8883 liberada |
 | "conexão recusada" | access code (muda ao reiniciar o Modo LAN) |
 | "sem confirmação da impressora" | firmware pode ter mudado o protocolo ou exigir Modo Desenvolvedor; confira o tópico/formato `gcode_line` na documentação da comunidade para a sua versão |
+| Robot: nenhum elemento encontrado | tela bloqueada ou apagada no celular; desbloqueie antes de rodar |
+| Robot: celular não encontrado | Depuração por Wi-Fi desligada (ao trocar de rede ela desliga) ou computador em outra rede |
 | Nenhum touchscreen encontrado | `adb devices`, autorizar depuração USB; alguns aparelhos restringem `getevent` |
 | Toque não detectado na descida | ponteira fora da tela, sem aterramento, borracha pouco condutiva, `z_floor` alto |
 | Erro de calibração > 0,5 mm | celular folgado no gabarito, ponteira bamba, `settle_s` baixo |
@@ -246,18 +245,16 @@ Rode **10 min**, depois **1 h** e só então **uma noite inteira**
 ## Estrutura
 
 ```
-taprobot/          biblioteca (bambu.py MQTT, robot.py gestos, calibration.py, touch_reader.py, appium_patch.py)
-calibrate.py       calibração, verificação e jog manual
-test_connection.py conexão e latência
-server.py          servidor HTTP local do robô (para testes em JS/WebdriverIO)
-wdio/              cliente JS e trechos de wdio.conf.js
-wdio.conf.js       configuração do WebdriverIO (Moto G06)
-specs/             testes WebdriverIO
-apps/              APK de exemplo (ApiDemos)
-examples/          integração com Appium/pytest (Python)
-soak/              teste de resistência e de consumo (cenário, coletor, guardião, relatório)
-runs/              execuções do soak (não versionar)
-docs/              decisões e aprendizados
-cad/               gabarito do celular (OpenSCAD)
-tests/             testes da lógica (sem hardware)
+taprobot/      biblioteca do robô (bambu.py MQTT, robot.py gestos, calibration.py,
+               touch_reader.py, device.py busca do celular, appium_patch.py)
+robot/         testes Appium em Robot Framework (bibliotecas, resources, testes)
+soak/          teste de resistência e de consumo (cenário, coletor, guardião, relatório)
+tools/         linha de comando: calibrate, test_connection, server (python -m tools.<nome>)
+tests/         testes unitários da lógica (sem hardware): python -m pytest tests -q
+examples/      alternativa em pytest para os testes Appium
+apps/          APK de exemplo (ApiDemos)
+cad/           gabarito do celular (OpenSCAD)
+docs/          decisões e aprendizados
+results/       saída do Robot (não versionar)
+runs/          execuções do soak (não versionar)
 ```

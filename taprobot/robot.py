@@ -49,7 +49,7 @@ class RobotTap:
     @property
     def z_contact(self) -> float:
         if self._z_contact is None:
-            raise ConfigError("z_contact desconhecido: rode `python calibrate.py run`")
+            raise ConfigError("z_contact desconhecido: rode `python -m tools.calibrate run`")
         return self._z_contact
 
     def set_z_contact(self, z: float):
@@ -61,7 +61,7 @@ class RobotTap:
 
     def _need_cal(self) -> Calibration:
         if self.cal is None:
-            raise ConfigError("sem calibração: rode `python calibrate.py run`")
+            raise ConfigError("sem calibração: rode `python -m tools.calibrate run`")
         return self.cal
 
     # ------------------------------------------------------------------ segurança
