@@ -14,8 +14,5 @@ results/
 __pycache__/
 .pytest_cache/
 
-# Projeto de terceiros guardado aqui só como referência (BambuScribe, GPLv3)
-BambuScribe-app/
-
 # macOS
 .DS_Store
