@@ -1,0 +1,30 @@
+# Roda a cada push e pull request. Nada aqui precisa de celular nem da impressora:
+# os testes usam adb, robô e relógio simulados, e o Robot roda em --dryrun (só sintaxe).
+name: testes
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  testes:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.10", "3.13"]
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+
+      - name: Instalar
+        run: pip install -r requirements.txt
+
+      - name: Testes da lógica (pytest)
+        run: python -m pytest -q
+
+      - name: Sintaxe dos testes Robot (--dryrun)
+        run: robot --dryrun --output NONE --log NONE --report NONE robot/tests
