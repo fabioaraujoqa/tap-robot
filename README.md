@@ -145,8 +145,8 @@ Observações:
   para testes em qualquer linguagem. Rotas `GET /health`, `POST /tap`, `/long_press`,
   `/swipe`, `/park`, sempre em pixels; cada chamada só responde quando o movimento estimado
   termina. Escuta só em `127.0.0.1` e **não tem autenticação**: não exponha na rede.
-- **pytest:** `examples/conftest_example.py` transforma todo `element.click()` em toque
-  físico (`taprobot.appium_patch.physical_clicks`). Exemplo em `examples/appium_example.py`.
+- **Python direto:** `from taprobot import simulated_robot, RobotTap` e use `tap_px`,
+  `swipe_px` e `long_press_px` (é o que a `TapRobotLibrary` faz por baixo).
 
 ## 6. Teste de resistência (soak) e de consumo
 
@@ -246,12 +246,11 @@ Rode **10 min**, depois **1 h** e só então **uma noite inteira**
 
 ```
 taprobot/      biblioteca do robô (bambu.py MQTT, robot.py gestos, calibration.py,
-               touch_reader.py, device.py busca do celular, appium_patch.py)
+               touch_reader.py, adb.py, device.py busca do celular, simulated.py)
 robot/         testes Appium em Robot Framework (bibliotecas, resources, testes)
 soak/          teste de resistência e de consumo (cenário, coletor, guardião, relatório)
 tools/         linha de comando: calibrate, test_connection, server (python -m tools.<nome>)
 tests/         testes unitários da lógica (sem hardware): python -m pytest tests -q
-examples/      alternativa em pytest para os testes Appium
 apps/          APK de exemplo (ApiDemos)
 docs/          decisões e aprendizados
 results/       saída do Robot (não versionar)

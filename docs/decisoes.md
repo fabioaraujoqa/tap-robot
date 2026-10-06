@@ -33,8 +33,9 @@ testes), com duas camadas a mais por causa do robô:
 **O que ficou de fora do Robot, de propósito.** O soak roda em Python puro (não como
 teste Robot): ele roda horas sem ninguém olhando, e o guardião precisa controlar o robô
 diretamente para estacionar a ponteira em qualquer falha. Quem escreve o roteiro edita só o
-YAML. O servidor HTTP continua em `tools/` para quem quiser usar o robô de outra linguagem,
-e `examples/` mostra a alternativa em pytest.
+YAML. O servidor HTTP continua em `tools/` para quem quiser usar o robô de outra linguagem.
+A alternativa em pytest (`examples/` e `taprobot/appium_patch.py`) foi removida em 6 de
+outubro de 2026 por não ter mais uso; está no histórico do git.
 
 ## 2. Próximo passo possível: soak com fluxo em Robot
 
