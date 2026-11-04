@@ -6,7 +6,7 @@ import pytest
 from soak.fake import FakeAdb
 from soak.scenario import Player, ScenarioError, WearCounter, load_scenario
 
-ROOT = Path(__file__).resolve().parents[1]
+ROOT = Path(__file__).resolve().parents[2]
 PKG = "io.appium.android.apis"
 
 

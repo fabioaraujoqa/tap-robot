@@ -8,7 +8,7 @@ import pytest
 
 from tools.server import make_server
 from taprobot import RobotTap
-from tests.test_logic import Recorder, make_cal, make_cfg
+from tests.unit.test_logic import Recorder, make_cal, make_cfg
 
 
 @pytest.fixture()

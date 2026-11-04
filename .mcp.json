@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "appium-mcp": {
+      "command": "npx",
+      "args": ["-y", "appium-mcp@1.99.3"],
+      "env": {
+        "ANDROID_HOME": "${ANDROID_HOME}"
+      }
+    }
+  }
+}

@@ -4,7 +4,7 @@ import pytest
 
 from taprobot import device
 
-import TapRobotLibrary as lib_module  # robot/libraries está no pythonpath do pytest
+import TapRobotLibrary as lib_module  # tests/robot/libraries está no pythonpath do pytest
 
 
 def test_parse_mdns_acha_o_serial_certo():
@@ -115,3 +115,48 @@ def test_gesto_sem_conectar_da_erro_claro():
 def test_desconectar_duas_vezes_e_seguro(lib):
     lib.disconnect()
     lib.disconnect()
+
+
+# ---------------------------------------------------------------- confirmação do toque pelo celular
+class FakeReader:
+    def __init__(self, sente):
+        self.sente, self.contacts = sente, []
+
+    def wait_contact(self, count_before, timeout=4.0):
+        return (360, 800) if self.sente else None
+
+    def stop(self):
+        pass
+
+
+def test_gesto_passa_quando_o_celular_sente(lib):
+    lib.reader = FakeReader(sente=True)
+    lib.tap_xy(360, 800)
+
+
+@pytest.mark.parametrize("gesto", [
+    lambda l: l.tap_xy(360, 800),
+    lambda l: l.long_press_xy(360, 800),
+    lambda l: l.swipe(360, 1300, 360, 400),
+])
+def test_gesto_falha_quando_o_celular_nao_sente(lib, gesto):
+    lib.reader = FakeReader(sente=False)
+    with pytest.raises(RuntimeError, match="não sentiu"):
+        gesto(lib)
+
+
+def test_arraste_entre_elementos_espera_antes_de_andar(lib, monkeypatch):
+    rects = {"a": {"x": 0, "y": 262, "width": 276, "height": 276},
+             "b": {"x": 276, "y": 262, "width": 276, "height": 276}}
+
+    class FakeBuiltIn:
+        def get_library_instance(self, name):
+            return type("A", (), {"get_element_rect": lambda self, loc: rects[loc]})()
+
+    monkeypatch.setattr(lib_module, "BuiltIn", FakeBuiltIn)
+    sent = []
+    monkeypatch.setattr(lib.robot.link, "send_gcode", lambda g, wait_ack=True: sent.append(g))
+    lib.drag_elements("a", "b", espera="0.6")
+    linhas = sent[0].splitlines()
+    pausa = linhas.index("G4 P600")
+    assert linhas[pausa - 1].startswith("G1 Z") and linhas[pausa + 1].startswith("G1 X")

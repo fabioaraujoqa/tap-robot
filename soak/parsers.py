@@ -2,7 +2,7 @@
 
 O formato muda entre versões do Android e fabricantes, então todo parser é tolerante:
 o que não encontrar vira None em vez de erro. Os testes usam saídas reais do Moto G06
-(Android 15) em tests/fixtures/.
+(Android 15) em tests/unit/fixtures/.
 """
 from __future__ import annotations
 

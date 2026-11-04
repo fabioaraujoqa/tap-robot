@@ -27,8 +27,8 @@ source .venv/bin/activate
 python -m pytest                                              # testes da lógica, sem hardware
 
 appium                                                        # em outro terminal
-robot -d results -e addnumber robot/tests                     # testes no celular (clique por software)
-robot -d results -e addnumber -v ROBO:True -v SIMULADO:True robot/tests   # com o robô simulado
+robot -d results -e addnumber tests/robot/funcionais tests/robot/e2e   # testes no celular (clique por software)
+robot -d results -e addnumber -v ROBO:True -v SIMULADO:True tests/robot/funcionais tests/robot/e2e   # com o robô simulado
 python -m soak run soak/examples/apidemos_soak.yaml --dry-run # soak simulado, ~2 min
 ```
 
@@ -58,10 +58,10 @@ calibração antes.
 ```
 taprobot/      biblioteca do robô (bambu.py MQTT, robot.py gestos, calibration.py,
                touch_reader.py, adb.py, device.py busca do celular, simulated.py)
-robot/         testes Appium em Robot Framework (bibliotecas, resources, testes)
 soak/          teste de resistência e de consumo (cenário, coletor, guardião, relatório)
 tools/         linha de comando: calibrate, test_connection, server (python -m tools.<nome>)
-tests/         testes unitários da lógica (sem hardware): python -m pytest tests -q
+tests/unit/    testes unitários da lógica (sem hardware): python -m pytest -q
+tests/robot/   testes Appium em Robot Framework: funcionais/, e2e/ e nao_funcionais/
 apps/          APK de exemplo (ApiDemos)
 docs/          decisões e aprendizados
 results/       saída do Robot (não versionar)

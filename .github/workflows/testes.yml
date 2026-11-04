@@ -27,4 +27,4 @@ jobs:
         run: python -m pytest -q
 
       - name: Sintaxe dos testes Robot (--dryrun)
-        run: robot --dryrun --output NONE --log NONE --report NONE robot/tests
+        run: robot --dryrun --output NONE --log NONE --report NONE tests/robot

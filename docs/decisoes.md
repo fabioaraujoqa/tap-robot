@@ -12,10 +12,10 @@ primeiro commit do repositório.
 | Parte | Onde |
 |---|---|
 | Robô (MQTT, G-code, travas de segurança, calibração, leitura de toque, busca do celular) | `taprobot/` |
-| Testes Appium (palavras-chave) | `robot/` |
+| Testes Appium (palavras-chave) | `tests/robot/` |
 | Teste de resistência e de consumo (cenário em YAML) | `soak/` |
 | Linha de comando (calibração, teste de conexão, servidor HTTP) | `tools/` |
-| Testes unitários (pytest, sem hardware) | `tests/` |
+| Testes unitários (pytest, sem hardware) | `tests/unit/` |
 
 **Por quê.** Uma linguagem só: o robô entra nos testes no mesmo processo, sem o servidor
 HTTP no meio, e qualquer parte do projeto pode ser mantida pela mesma pessoa. O Robot
