@@ -172,9 +172,12 @@ class RobotTap:
         )
         self._pos = (x, y, hover)
 
-    def swipe_mm(self, x1, y1, x2, y2, duration_s=0.35):
+    def swipe_mm(self, x1, y1, x2, y2, duration_s=0.35, hold_s=0.0):
+        """Arrasta. `hold_s` fica parado encostado antes de andar (telas que pedem toque longo)."""
         if duration_s <= 0:
             raise ValueError("duration_s deve ser > 0")
+        if hold_s < 0:
+            raise ValueError("hold_s não pode ser negativo")
         hover, touch = self._z_levels()
         self._check_xy(x1, y1)
         self._check_xy(x2, y2)
@@ -186,6 +189,7 @@ class RobotTap:
             self._t(self._z_dist(hover), m["feed_z"])
             + self._t(self._xy_dist(x1, y1), m["feed_xy"])
             + self._t(hover - touch, m["feed_z_touch"])
+            + hold_s
             + self._t(dist, feed)
             + self._t(hover - touch, m["feed_z"])
         )
@@ -194,6 +198,7 @@ class RobotTap:
                 f"G1 Z{hover:.3f} F{int(m['feed_z'])}",
                 f"G1 X{x1:.3f} Y{y1:.3f} F{int(m['feed_xy'])}",
                 f"G1 Z{touch:.3f} F{int(m['feed_z_touch'])}",
+                *([f"G4 P{int(hold_s * 1000)}"] if hold_s else []),
                 f"G1 X{x2:.3f} Y{y2:.3f} F{int(feed)}",
                 f"G1 Z{hover:.3f} F{int(m['feed_z'])}",
             ],
@@ -218,13 +223,13 @@ class RobotTap:
     def long_press_px(self, x, y, seconds=1.0):
         self.tap_px(x, y, dwell_ms=int(seconds * 1000))
 
-    def swipe_px(self, x1, y1, x2, y2, duration_s=0.35):
+    def swipe_px(self, x1, y1, x2, y2, duration_s=0.35, hold_s=0.0):
         self._check_px(x1, y1)
         self._check_px(x2, y2)
         cal = self._need_cal()
         ax, ay = cal.px_to_mm(x1, y1)
         bx, by = cal.px_to_mm(x2, y2)
-        self.swipe_mm(ax, ay, bx, by, duration_s)
+        self.swipe_mm(ax, ay, bx, by, duration_s, hold_s)
 
     def tap_element(self, element, **kw):
         """Toca o centro de um WebElement do Appium."""

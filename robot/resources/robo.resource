@@ -14,7 +14,7 @@ Resource          base.resource
 Iniciar sessão com robô
     [Documentation]    Sessão Appium + conexão com o robô (se ROBO=True).
     [Arguments]    &{app}
-    IF    ${ROBO}    Conectar Robô
+    IF    ${ROBO}    Conectar Robô    udid=${UDID}
     Iniciar sessão    &{app}
 
 Encerrar sessão com robô
@@ -30,3 +30,25 @@ Clicar
     ELSE
         Click Element    ${locator}
     END
+
+Tocar em coordenada
+    [Documentation]    Toque físico (ROBO=True) ou por software num ponto da tela, em pixels.
+    [Arguments]    ${x}    ${y}
+    IF    ${ROBO}    Toque Físico Em Coordenada    ${x}    ${y}
+    IF    not ${ROBO} or ${SIMULADO}
+        Tap With Positions    100ms    ${{(int(${x}), int(${y}))}}
+    END
+
+Arrastar
+    [Documentation]    Arraste físico (ROBO=True) ou por software entre dois pontos, em pixels.
+    [Arguments]    ${x1}    ${y1}    ${x2}    ${y2}    ${duracao}=0.8
+    IF    ${ROBO}    Arraste Físico    ${x1}    ${y1}    ${x2}    ${y2}    ${duracao}
+    IF    not ${ROBO} or ${SIMULADO}
+        Swipe    start_x=${x1}    start_y=${y1}    end_x=${x2}    end_y=${y2}    duration=${duracao}s
+    END
+
+Arrastar entre elementos
+    [Documentation]    Encosta, espera e arrasta. Serve para telas que pedem toque longo.
+    [Arguments]    ${origem}    ${destino}
+    IF    ${ROBO}    Arraste Físico Entre Elementos    ${origem}    ${destino}
+    IF    not ${ROBO} or ${SIMULADO}    Drag And Drop    ${origem}    ${destino}

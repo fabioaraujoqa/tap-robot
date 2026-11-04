@@ -7,6 +7,11 @@ Resource          ../robo.resource
 ${APIDEMOS_APK}         ${CURDIR}/../../../apps/ApiDemos-debug.apk
 ${MENU_VIEWS}           accessibility_id=Views
 ${VIEWS_BUTTONS}        accessibility_id=Buttons
+${MENU_ANIMATION}       accessibility_id=Animation
+${BOUNCING_BALLS}       accessibility_id=Bouncing Balls
+${DRAG_AND_DROP}        accessibility_id=Drag and Drop
+${PONTO_1}              id=io.appium.android.apis:id/drag_dot_1
+${PONTO_2}              id=io.appium.android.apis:id/drag_dot_2
 
 
 *** Keywords ***
@@ -27,3 +32,23 @@ Tela Views deve estar visível
 
 Voltar
     Go Back
+
+Esperar e clicar
+    [Documentation]    Espera só para sincronizar com a troca de tela; não é verificação do app.
+    [Arguments]    ${locator}
+    Wait Until Element Is Visible    ${locator}    10s
+    Clicar    ${locator}
+
+Abrir Bouncing Balls
+    Esperar e clicar    ${MENU_ANIMATION}
+    Esperar e clicar    ${BOUNCING_BALLS}
+    Sleep    1s
+
+Abrir Drag and Drop
+    Esperar e clicar    ${MENU_VIEWS}
+    Esperar e clicar    ${DRAG_AND_DROP}
+    Wait Until Element Is Visible    ${PONTO_1}    10s
+
+Voltar ao menu inicial
+    Go Back
+    Wait Until Element Is Visible    ${MENU_ANIMATION}    5s

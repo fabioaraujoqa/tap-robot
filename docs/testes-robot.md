@@ -25,9 +25,13 @@ robot/
 **Palavras-chave do robô** (`TapRobotLibrary`), todas em pixels da tela:
 `Conectar Robô`, `Desconectar Robô` (estaciona a ponteira), `Toque Físico No Elemento`,
 `Toque Longo Físico No Elemento`, `Toque Físico Em Coordenada`,
-`Toque Longo Físico Em Coordenada`, `Arraste Físico`, `Estacionar Ponteira`,
-`Descobrir Celular`. Nos testes, use `Clicar    ${LOCATOR}` (de `robo.resource`): o mesmo
-teste roda com ou sem o robô.
+`Toque Longo Físico Em Coordenada`, `Arraste Físico`, `Arraste Físico Entre Elementos`,
+`Estacionar Ponteira`, `Descobrir Celular`. Nos testes, use as palavras-chave de
+`robo.resource` (`Clicar`, `Tocar em coordenada`, `Arrastar`, `Arrastar entre elementos`):
+o mesmo teste roda com ou sem o robô.
+
+Com o robô real, cada gesto só passa se o celular sentir o contato (`getevent`), sem olhar o
+app. `robot/tests/e2e_gestos.robot` usa só isso: toca e arrasta para os testes não funcionais.
 
 Um teste novo segue o padrão de `robot/tests/apidemos.robot`: seletores e ações num
 `.resource` em `pages/`, e o `.robot` só com os passos legíveis.
