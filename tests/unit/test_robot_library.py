@@ -4,7 +4,7 @@ import pytest
 
 from taprobot import device
 
-import TapRobotLibrary as lib_module  # robot/libraries está no pythonpath do pytest
+import TapRobotLibrary as lib_module  # tests/robot/libraries está no pythonpath do pytest
 
 
 def test_parse_mdns_acha_o_serial_certo():

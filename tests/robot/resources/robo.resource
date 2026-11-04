@@ -1,9 +1,9 @@
 *** Settings ***
 Documentation     Toque físico pelo robô (P1S) quando ROBO=True; clique por software quando não.
 ...
-...               robot -d results robot/tests                                  clique por software
-...               robot -d results -v ROBO:True robot/tests                     toque físico
-...               robot -d results -v ROBO:True -v SIMULADO:True robot/tests    robô simulado (sem P1S)
+...               robot -d results tests/robot/e2e                                  clique por software
+...               robot -d results -v ROBO:True tests/robot/e2e                     toque físico
+...               robot -d results -v ROBO:True -v SIMULADO:True tests/robot/e2e    robô simulado (sem P1S)
 ...
 ...               No modo simulado o toque não acontece de verdade, então "Clicar" também clica
 ...               por software para o teste seguir; o G-code de cada toque fica no log.

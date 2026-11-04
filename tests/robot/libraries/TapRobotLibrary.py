@@ -24,7 +24,7 @@ from taprobot.adb import AdbClient
 from taprobot.device import DEFAULT_SERIAL, resolve_udid
 from taprobot.touch_reader import TouchReader, find_touch_device, get_wm_size
 
-ROOT = Path(__file__).resolve().parents[2]
+ROOT = Path(__file__).resolve().parents[3]
 TOUCH_TIMEOUT_S = 3.0  # folga: o robô só estima quando o movimento termina
 
 

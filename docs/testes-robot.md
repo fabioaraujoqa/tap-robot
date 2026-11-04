@@ -1,25 +1,27 @@
 # Testes Appium com Robot Framework
 
-Os testes ficam em `robot/`, no estilo palavra-chave do Robot Framework + AppiumLibrary.
+Os testes ficam em `tests/robot/`, no estilo palavra-chave do Robot Framework + AppiumLibrary.
 O Appium localiza o elemento; com `ROBO=True`, o toque é feito pela ponteira da P1S.
 
 ```bash
 python3 -m venv .venv && .venv/bin/pip install -r requirements.txt
 appium                                                        # outro terminal
 
-robot -d results robot/tests                                  # clique por software
-robot -d results -v ROBO:True robot/tests                     # toque físico (P1S calibrada)
-robot -d results -v ROBO:True -v SIMULADO:True robot/tests    # robô simulado, sem a P1S
-robot -d results -e addnumber robot/tests                     # sem o AddNumber (exige instalar à mão)
+robot -d results tests/robot/funcionais tests/robot/e2e                               # clique por software
+robot -d results -v ROBO:True tests/robot/funcionais tests/robot/e2e                  # toque físico (P1S calibrada)
+robot -d results -v ROBO:True -v SIMULADO:True tests/robot/funcionais tests/robot/e2e # robô simulado, sem a P1S
+robot -d results -e addnumber tests/robot/funcionais                                  # sem o AddNumber (exige instalar à mão)
 ```
 
 ```
-robot/
+tests/robot/
   libraries/TapRobotLibrary.py      palavras-chave do robô físico (envolve o RobotTap)
   resources/base.resource           sessão Appium; acha o celular sozinho (USB ou Wi-Fi)
   resources/robo.resource           "Clicar": físico com ROBO=True, por software sem
   resources/pages/*.resource        seletores e ações de cada tela
-  tests/*.robot                     casos de teste
+  funcionais/*.robot                casos de teste funcionais
+  e2e/*.robot                       e2e curtos, os únicos que usam o braço
+  nao_funcionais/                   suíte não funcional (tem README próprio)
 ```
 
 **Palavras-chave do robô** (`TapRobotLibrary`), todas em pixels da tela:
@@ -31,9 +33,9 @@ robot/
 o mesmo teste roda com ou sem o robô.
 
 Com o robô real, cada gesto só passa se o celular sentir o contato (`getevent`), sem olhar o
-app. `robot/tests/e2e_gestos.robot` usa só isso: toca e arrasta para os testes não funcionais.
+app. `tests/robot/e2e/e2e_gestos.robot` usa só isso: toca e arrasta para os testes não funcionais.
 
-Um teste novo segue o padrão de `robot/tests/apidemos.robot`: seletores e ações num
+Um teste novo segue o padrão de `tests/robot/funcionais/apidemos.robot`: seletores e ações num
 `.resource` em `pages/`, e o `.robot` só com os passos legíveis.
 
 - **Celular:** sem `-v UDID:...`, o `base.resource` acha o Moto G06 sozinho, no cabo USB ou

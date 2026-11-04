@@ -4,7 +4,7 @@ Resource          ../robo.resource
 
 
 *** Variables ***
-${APIDEMOS_APK}         ${CURDIR}/../../../apps/ApiDemos-debug.apk
+${APIDEMOS_APK}         ${CURDIR}/../../../../apps/ApiDemos-debug.apk
 ${MENU_VIEWS}           accessibility_id=Views
 ${VIEWS_BUTTONS}        accessibility_id=Buttons
 ${MENU_ANIMATION}       accessibility_id=Animation
